@@ -141,9 +141,9 @@ export default function FeedPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2">
-                      <p className="font-semibold text-foreground text-[15px] hover:text-primary transition-colors">{profile?.name || "Anônimo"}</p>
-                      {profile?.aka && (
-                        <span className="text-xs text-primary/70 font-medium">AKA {profile.aka}</span>
+                      <p className="font-semibold text-foreground text-[15px] hover:text-primary transition-colors">{profile?.aka || profile?.name || "Anônimo"}</p>
+                      {profile?.aka && profile?.name && (
+                        <span className="text-xs text-muted-foreground font-medium">({profile.name})</span>
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
