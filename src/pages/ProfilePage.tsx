@@ -119,7 +119,7 @@ export default function ProfilePage() {
 
       {/* Cover */}
       <div
-        className="relative h-40 md:h-56 bg-gradient-to-br from-green-deep to-background overflow-hidden group cursor-pointer"
+        className="relative h-48 md:h-72 bg-gradient-to-br from-green-deep to-background overflow-hidden group cursor-pointer"
         onClick={() => coverInputRef.current?.click()}
       >
         {profile?.cover_url ? (
@@ -131,11 +131,11 @@ export default function ProfilePage() {
       </div>
 
       {/* Avatar + Info */}
-      <div className="px-4 -mt-12 relative z-10">
-        <div className="flex items-end gap-4 mb-4">
+      <div className="px-6 -mt-16 relative z-10">
+        <div className="flex items-end gap-5 mb-3">
           {/* Avatar */}
           <div
-            className="relative w-24 h-24 rounded-2xl bg-card border-4 border-background flex items-center justify-center text-5xl shadow-gold overflow-hidden cursor-pointer group"
+            className="relative w-32 h-32 rounded-2xl bg-card border-4 border-background flex items-center justify-center text-6xl shadow-gold overflow-hidden cursor-pointer group shrink-0"
             onClick={() => avatarInputRef.current?.click()}
           >
             {profile?.avatar_url ? (
@@ -144,7 +144,7 @@ export default function ProfilePage() {
               "👤"
             )}
             <div className="absolute inset-0 bg-background/0 group-hover:bg-background/50 transition-colors flex items-center justify-center">
-              <Camera className="w-5 h-5 text-foreground opacity-0 group-hover:opacity-80 transition-opacity" />
+              <Camera className="w-6 h-6 text-foreground opacity-0 group-hover:opacity-80 transition-opacity" />
             </div>
           </div>
 
