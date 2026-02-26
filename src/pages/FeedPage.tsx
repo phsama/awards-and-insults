@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Heart, MessageCircle, BarChart3, ImageIcon, Send } from "lucide-react";
+import { Heart, MessageCircle, Send } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,9 +17,7 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
 
-  useEffect(() => {
-    loadFeed();
-  }, []);
+  useEffect(() => { loadFeed(); }, []);
 
   const loadFeed = async () => {
     setLoading(true);
@@ -65,27 +63,45 @@ export default function FeedPage() {
     return `${Math.floor(mins / 1440)}d`;
   };
 
+  // Accent colors for avatar ring based on index
+  const accentColors = [
+    "ring-primary",
+    "ring-[hsl(157,70%,40%)]",
+    "ring-[hsl(280,50%,55%)]",
+    "ring-[hsl(200,70%,50%)]",
+    "ring-[hsl(350,60%,55%)]",
+  ];
+
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
-      <h1 className="font-display text-3xl font-bold mb-6 text-gradient-gold">Feed</h1>
+    <div className="max-w-2xl mx-auto px-3 py-4">
+      <h1 className="font-display text-3xl font-bold mb-5 text-gradient-gold">Feed</h1>
 
       {/* Compose */}
-      <div className="bg-gradient-card border border-border rounded-xl p-4 mb-6">
-        <Textarea
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-          placeholder="Solta o verbo, vagabundo..."
-          className="bg-transparent border-none resize-none text-foreground placeholder:text-muted-foreground mb-3"
-          rows={3}
-        />
-        <div className="flex items-center justify-end">
+      <div className="bg-gradient-card border border-border rounded-2xl p-5 mb-5 shadow-gold">
+        <div className="flex gap-3">
+          <div className="w-11 h-11 rounded-full bg-primary/20 ring-2 ring-primary flex items-center justify-center text-lg shrink-0 overflow-hidden">
+            {profiles[user?.id || ""]?.avatar_url ? (
+              <img src={profiles[user!.id].avatar_url} className="w-full h-full object-cover" />
+            ) : "✍️"}
+          </div>
+          <div className="flex-1">
+            <Textarea
+              value={newPost}
+              onChange={(e) => setNewPost(e.target.value)}
+              placeholder="Solta o verbo, vagabundo..."
+              className="bg-transparent border-none resize-none text-foreground placeholder:text-muted-foreground text-[15px] min-h-[60px] p-0 focus-visible:ring-0"
+              rows={2}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-end mt-2">
           <Button
             size="sm"
-            className="bg-primary text-primary-foreground hover:bg-gold-light"
+            className="bg-primary text-primary-foreground hover:bg-gold-light rounded-full px-5"
             onClick={handlePost}
             disabled={posting || !newPost.trim()}
           >
-            <Send className="w-4 h-4 mr-1" /> Postar
+            <Send className="w-4 h-4 mr-1.5" /> Postar
           </Button>
         </div>
       </div>
@@ -99,45 +115,58 @@ export default function FeedPage() {
           <p className="text-muted-foreground text-sm">Nenhum post ainda. Seja o primeiro!</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {posts.map((post, i) => {
             const profile = profiles[post.user_id];
             const postReactions = reactions.filter((r) => r.post_id === post.id);
             const postComments = comments.filter((c) => c.post_id === post.id);
             const userReacted = postReactions.some((r) => r.user_id === user?.id);
+            const ringColor = accentColors[i % accentColors.length];
 
             return (
               <motion.div
                 key={post.id}
-                initial={{ opacity: 0, y: 15 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="bg-gradient-card border border-border rounded-xl p-5"
+                transition={{ delay: i * 0.04 }}
+                className="bg-gradient-card border border-border rounded-2xl p-5 hover:border-primary/20 transition-colors"
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-lg">
+                <div className="flex items-start gap-3.5 mb-3">
+                  <div className={`w-12 h-12 rounded-full bg-muted ring-2 ${ringColor} flex items-center justify-center text-xl shrink-0 overflow-hidden`}>
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} className="w-full h-full rounded-full object-cover" />
                     ) : "👤"}
                   </div>
-                  <div>
-                    <p className="font-semibold text-foreground text-sm">{profile?.name || "Anônimo"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {profile?.aka ? `AKA ${profile.aka} · ` : ""}{timeAgo(post.created_at)}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2">
+                      <p className="font-semibold text-foreground text-[15px]">{profile?.name || "Anônimo"}</p>
+                      {profile?.aka && (
+                        <span className="text-xs text-primary/70 font-medium">AKA {profile.aka}</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {profile?.username ? `@${profile.username} · ` : ""}{timeAgo(post.created_at)}
                     </p>
                   </div>
                 </div>
-                <p className="text-foreground mb-4">{post.content}</p>
 
-                <div className="flex items-center gap-6 text-muted-foreground">
+                <p className="text-foreground text-[15px] leading-relaxed mb-4 pl-[60px]">{post.content}</p>
+
+                <div className="flex items-center gap-5 pl-[60px]">
                   <button
                     onClick={() => handleReact(post.id)}
-                    className={`flex items-center gap-1.5 text-sm transition-colors ${userReacted ? "text-primary" : "hover:text-primary"}`}
+                    className={`flex items-center gap-1.5 text-sm font-medium transition-all ${
+                      userReacted
+                        ? "text-[hsl(350,70%,55%)]"
+                        : "text-muted-foreground hover:text-[hsl(350,70%,55%)]"
+                    }`}
                   >
-                    <Heart className={`w-4 h-4 ${userReacted ? "fill-primary" : ""}`} /> {postReactions.length}
+                    <Heart className={`w-[18px] h-[18px] transition-transform ${userReacted ? "fill-[hsl(350,70%,55%)] scale-110" : ""}`} />
+                    {postReactions.length > 0 && postReactions.length}
                   </button>
-                  <span className="flex items-center gap-1.5 text-sm">
-                    <MessageCircle className="w-4 h-4" /> {postComments.length}
+                  <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <MessageCircle className="w-[18px] h-[18px]" />
+                    {postComments.length > 0 && postComments.length}
                   </span>
                 </div>
               </motion.div>
