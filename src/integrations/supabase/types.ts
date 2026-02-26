@@ -204,6 +204,41 @@ export type Database = {
           },
         ]
       }
+      event_checklist_items: {
+        Row: {
+          checked: boolean
+          checked_by: string | null
+          created_at: string
+          event_id: string
+          id: string
+          label: string
+        }
+        Insert: {
+          checked?: boolean
+          checked_by?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          label: string
+        }
+        Update: {
+          checked?: boolean
+          checked_by?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_checklist_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_rsvps: {
         Row: {
           created_at: string
