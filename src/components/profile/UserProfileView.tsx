@@ -85,7 +85,7 @@ export default function UserProfileView({ userId, isOwn, onEditClick, editSectio
 
           <div className="flex-1 pb-1">
             <div className="flex items-center gap-2">
-              <h1 className="font-display text-2xl font-bold text-foreground">{profile?.name || "Sem nome"}</h1>
+              <h1 className="font-display text-2xl font-bold text-foreground">{profile?.aka || profile?.name || "Sem nome"}</h1>
               {isOwn && onEditClick && (
                 <button onClick={onEditClick} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors">
                   <MessageSquare className="w-4 h-4" />
@@ -94,7 +94,7 @@ export default function UserProfileView({ userId, isOwn, onEditClick, editSectio
             </div>
             <p className="text-sm text-muted-foreground">
               {profile?.username ? `@${profile.username}` : "sem username"}
-              {profile?.aka ? ` · AKA: ${profile.aka}` : ""}
+              {profile?.aka && profile?.name ? ` · ${profile.name}` : ""}
             </p>
           </div>
         </div>
