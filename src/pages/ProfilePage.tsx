@@ -112,14 +112,14 @@ export default function ProfilePage() {
   if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Carregando...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto pt-3">
       {/* Hidden file inputs */}
       <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
       <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
 
       {/* Cover */}
       <div
-        className="relative h-48 md:h-72 bg-gradient-to-br from-green-deep to-background overflow-hidden group cursor-pointer"
+        className="relative h-48 md:h-72 mx-3 rounded-xl bg-gradient-to-br from-green-deep to-background overflow-hidden group cursor-pointer"
         onClick={() => coverInputRef.current?.click()}
       >
         {profile?.cover_url ? (
@@ -131,11 +131,11 @@ export default function ProfilePage() {
       </div>
 
       {/* Avatar + Info */}
-      <div className="px-6 -mt-16 relative z-10">
+      <div className="px-6 -mt-20 relative z-10">
         <div className="flex items-end gap-5 mb-3">
           {/* Avatar */}
           <div
-            className="relative w-32 h-32 rounded-2xl bg-card border-4 border-background flex items-center justify-center text-6xl shadow-gold overflow-hidden cursor-pointer group shrink-0"
+            className="relative w-40 h-40 rounded-2xl bg-card border-4 border-background flex items-center justify-center text-7xl shadow-gold overflow-hidden cursor-pointer group shrink-0"
             onClick={() => avatarInputRef.current?.click()}
           >
             {profile?.avatar_url ? (
