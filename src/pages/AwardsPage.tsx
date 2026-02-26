@@ -87,23 +87,43 @@ export default function AwardsPage() {
   return (
     <div className="h-full flex flex-col bg-gradient-dark p-4 md:p-6 overflow-auto">
       {/* Hero */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center mb-4">
-        <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 py-1 mb-2">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center mb-8">
+        <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 py-1 mb-4">
           <Trophy className="w-3.5 h-3.5 text-primary" />
           <span className="text-xs font-medium text-primary">
             {season ? `Temporada ${season.year}` : "Sem temporada"}
           </span>
         </div>
-        <h1 className="font-display text-3xl md:text-5xl font-bold text-gradient-gold leading-tight">
+        <h1 className="font-display text-3xl md:text-5xl font-bold text-gradient-gold leading-tight mb-3">
           Motherfucker Awards
         </h1>
-        <p className="text-muted-foreground text-sm mt-1">
+        <p className="text-muted-foreground text-sm md:text-base max-w-md mx-auto">
           {isNominationsOpen ? "🔥 Indicações abertas — indique os vagabundos!" : "Alguém precisa ganhar isso aqui."}
         </p>
       </motion.div>
 
+      {/* Como funciona */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+        className="max-w-3xl mx-auto w-full mb-8 bg-gradient-card border border-border rounded-xl p-5">
+        <h2 className="font-display text-base font-bold text-foreground mb-3">🤔 Como é essa parada?</h2>
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <p>
+            <span className="text-primary font-semibold">1. Campanha</span> — O líder cria uma temporada e define as categorias. Tipo "Mais Caloteiro", "Rei do Atraso"... criatividade é o limite.
+          </p>
+          <p>
+            <span className="text-primary font-semibold">2. Indicações</span> — Todo mundo indica quem merece (ou não merece) cada título. Pode indicar aquele amigo querido sem dó.
+          </p>
+          <p>
+            <span className="text-primary font-semibold">3. Votação</span> — Depois que as indicações fecham, abre a votação. Aí é democracia pura: um voto por categoria, sem choro.
+          </p>
+          <p>
+            <span className="text-primary font-semibold">4. Resultado</span> — O vencedor de cada categoria ganha o título (e a vergonha) pra sempre. Hall da Fama, bebê. 🏆
+          </p>
+        </div>
+      </motion.div>
+
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-2 md:gap-3 mb-4 max-w-3xl mx-auto w-full">
+      <div className="grid grid-cols-4 gap-2 md:gap-3 mb-8 max-w-3xl mx-auto w-full">
         {stats.map((stat, i) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.05 }}
             className="bg-gradient-card border border-border rounded-lg p-2.5 md:p-3 text-center">
@@ -116,7 +136,7 @@ export default function AwardsPage() {
 
       {/* Categories */}
       <div className="flex-1 max-w-3xl mx-auto w-full min-h-0">
-        <h2 className="font-display text-lg font-bold mb-3 text-foreground">
+        <h2 className="font-display text-lg font-bold mb-4 text-foreground">
           🏆 {season?.phase === "results" ? "Hall da Fama" : "Categorias"}
         </h2>
 
