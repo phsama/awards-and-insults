@@ -88,7 +88,15 @@ export default function LoginPage() {
         className="w-full max-w-md relative z-10"
       >
         <div className="flex justify-center mb-8">
-          <img src={logo} alt="Motherfucker Awards" className="w-48 h-auto drop-shadow-2xl" />
+          <img
+            src={logo}
+            alt="Motherfucker Awards"
+            className="w-48 h-auto"
+            style={{
+              filter: 'drop-shadow(0 0 40px hsl(43 56% 52% / 0.3))',
+              mixBlendMode: 'lighten',
+            }}
+          />
         </div>
 
         <div className="bg-card/80 backdrop-blur-xl border border-border rounded-2xl p-8 shadow-gold">
