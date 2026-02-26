@@ -12,6 +12,7 @@ import EventsPage from "./pages/EventsPage";
 import LibraryPage from "./pages/LibraryPage";
 import SavingsPage from "./pages/SavingsPage";
 import ProfilePage from "./pages/ProfilePage";
+import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -71,6 +72,14 @@ const App = () => (
               element={
                 <RequireAuth>
                   <AppLayout><ProfilePage /></AppLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RequireAuth>
+                  <AppLayout><AdminPage /></AppLayout>
                 </RequireAuth>
               }
             />
