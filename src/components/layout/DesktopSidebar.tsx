@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Trophy, MessageSquare, Calendar, BookOpen, PiggyBank, User, LogOut, Settings } from "lucide-react";
+import { Trophy, MessageSquare, Calendar, BookOpen, PiggyBank, User, LogOut, Settings, Vote } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { to: "/awards", label: "Awards", icon: Trophy },
+  { to: "/votacao", label: "Votação", icon: Vote },
   { to: "/feed", label: "Feed", icon: MessageSquare },
   { to: "/eventos", label: "Eventos", icon: Calendar },
   { to: "/biblioteca", label: "Biblioteca", icon: BookOpen },

@@ -7,6 +7,7 @@ import { AuthProvider, RequireAuth } from "@/hooks/useAuth";
 import { AppLayout } from "@/components/layout/AppLayout";
 import LoginPage from "./pages/LoginPage";
 import AwardsPage from "./pages/AwardsPage";
+import VotingPage from "./pages/VotingPage";
 import FeedPage from "./pages/FeedPage";
 import EventsPage from "./pages/EventsPage";
 import LibraryPage from "./pages/LibraryPage";
@@ -32,6 +33,14 @@ const App = () => (
               element={
                 <RequireAuth>
                   <AppLayout><AwardsPage /></AppLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/votacao"
+              element={
+                <RequireAuth>
+                  <AppLayout><VotingPage /></AppLayout>
                 </RequireAuth>
               }
             />
