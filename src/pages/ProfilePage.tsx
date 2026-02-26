@@ -1,54 +1,58 @@
 import { motion } from "framer-motion";
-import { Trophy, MessageSquare, PiggyBank, Settings, Camera } from "lucide-react";
+import { Trophy, MessageSquare, PiggyBank, Camera } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function ProfilePage() {
-  const user = {
-    name: "Zé Ninguém",
-    username: "zeninguem",
-    aka: "O Imprevisível",
-    bio: "Profissional em fazer nada e ser lembrado por tudo.",
-    avatar: "🤡",
-    awards: 3,
-    posts: 42,
-    saved: 850,
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) loadProfile();
+  }, [user]);
+
+  const loadProfile = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", user!.id)
+      .maybeSingle();
+    setProfile(data);
+    setLoading(false);
   };
+
+  if (loading) return <p className="text-muted-foreground text-sm text-center py-12">Carregando...</p>;
 
   return (
     <div className="max-w-3xl mx-auto">
       {/* Cover */}
-      <div className="relative h-40 md:h-56 bg-gradient-to-br from-green-deep to-background">
-        <button className="absolute bottom-3 right-3 p-2 rounded-lg bg-card/80 text-muted-foreground hover:text-primary">
-          <Camera className="w-4 h-4" />
-        </button>
+      <div className="relative h-40 md:h-56 bg-gradient-to-br from-green-deep to-background overflow-hidden">
+        {profile?.cover_url && (
+          <img src={profile.cover_url} className="w-full h-full object-cover" alt="Cover" />
+        )}
       </div>
 
       {/* Avatar + Info */}
       <div className="px-4 -mt-12 relative z-10">
         <div className="flex items-end gap-4 mb-4">
-          <div className="w-24 h-24 rounded-2xl bg-card border-4 border-background flex items-center justify-center text-5xl shadow-gold">
-            {user.avatar}
+          <div className="w-24 h-24 rounded-2xl bg-card border-4 border-background flex items-center justify-center text-5xl shadow-gold overflow-hidden">
+            {profile?.avatar_url ? (
+              <img src={profile.avatar_url} className="w-full h-full object-cover" alt="Avatar" />
+            ) : "👤"}
           </div>
           <div className="pb-1">
-            <h1 className="font-display text-2xl font-bold text-foreground">{user.name}</h1>
-            <p className="text-sm text-muted-foreground">@{user.username} · AKA: {user.aka}</p>
+            <h1 className="font-display text-2xl font-bold text-foreground">{profile?.name || "Sem nome"}</h1>
+            <p className="text-sm text-muted-foreground">
+              {profile?.username ? `@${profile.username}` : ""}
+              {profile?.aka ? ` · AKA: ${profile.aka}` : ""}
+            </p>
           </div>
         </div>
-        <p className="text-foreground text-sm mb-4">{user.bio}</p>
-
-        <div className="flex gap-6 mb-6">
-          {[
-            { label: "Awards", value: user.awards, icon: Trophy },
-            { label: "Posts", value: user.posts, icon: MessageSquare },
-            { label: "Guardado", value: `R$${user.saved}`, icon: PiggyBank },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="font-display text-lg font-bold text-primary">{stat.value}</p>
-              <p className="text-xs text-muted-foreground">{stat.label}</p>
-            </div>
-          ))}
-        </div>
+        {profile?.bio && <p className="text-foreground text-sm mb-4">{profile.bio}</p>}
       </div>
 
       {/* Tabs */}
