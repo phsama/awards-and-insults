@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -14,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 export default function AdminPage() {
   const { user, isLider } = useAuth();
+  const navigate = useNavigate();
   const [seasons, setSeasons] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [nominations, setNominations] = useState<any[]>([]);
@@ -395,7 +397,11 @@ export default function AdminPage() {
         </h2>
         <div className="space-y-2">
           {profiles.map((p) => (
-            <div key={p.id} className="bg-gradient-card border border-border rounded-lg px-4 py-3 flex items-center gap-3">
+            <div
+              key={p.id}
+              className="bg-gradient-card border border-border rounded-lg px-4 py-3 flex items-center gap-3 cursor-pointer hover:border-primary/30 transition-colors"
+              onClick={() => navigate(`/perfil/${p.user_id}`)}
+            >
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm overflow-hidden">
                 {p.avatar_url ? <img src={p.avatar_url} className="w-full h-full object-cover" /> : "👤"}
               </div>
@@ -403,6 +409,7 @@ export default function AdminPage() {
                 <p className="text-sm font-semibold text-foreground">{p.name || "Sem nome"}</p>
                 <p className="text-xs text-muted-foreground">{p.username ? `@${p.username}` : ""} {p.aka ? `· AKA: ${p.aka}` : ""}</p>
               </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </div>
           ))}
         </div>
