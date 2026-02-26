@@ -1,0 +1,1 @@
+ALTER TABLE public.award_categories ADD COLUMN description TEXT DEFAULT NULL;
