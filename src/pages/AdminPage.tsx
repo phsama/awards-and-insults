@@ -23,6 +23,7 @@ export default function AdminPage() {
   const [invites, setInvites] = useState<any[]>([]);
   const [badges, setBadges] = useState<any[]>([]);
   const [userBadges, setUserBadges] = useState<any[]>([]);
+  const [userRoles, setUserRoles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Badge assignment
@@ -41,7 +42,7 @@ export default function AdminPage() {
 
   const loadAll = async () => {
     setLoading(true);
-    const [seasonsRes, catsRes, nomsRes, profilesRes, invitesRes, badgesRes, ubRes] = await Promise.all([
+    const [seasonsRes, catsRes, nomsRes, profilesRes, invitesRes, badgesRes, ubRes, rolesRes] = await Promise.all([
       supabase.from("award_seasons").select("*").order("year", { ascending: false }),
       supabase.from("award_categories").select("*"),
       supabase.from("award_nominations").select("*"),
@@ -49,6 +50,7 @@ export default function AdminPage() {
       supabase.from("invites").select("*").order("created_at", { ascending: false }),
       supabase.from("badges").select("*"),
       supabase.from("user_badges").select("*"),
+      supabase.from("user_roles").select("*"),
     ]);
     setSeasons(seasonsRes.data || []);
     setCategories(catsRes.data || []);
@@ -57,6 +59,7 @@ export default function AdminPage() {
     setInvites(invitesRes.data || []);
     setBadges(badgesRes.data || []);
     setUserBadges(ubRes.data || []);
+    setUserRoles(rolesRes.data || []);
     if (seasonsRes.data?.[0]) setSelectedSeason(seasonsRes.data[0].id);
     setLoading(false);
   };
@@ -132,6 +135,21 @@ export default function AdminPage() {
     toast.success("Badge removida");
     loadAll();
   };
+
+  const changeRole = async (targetUserId: string, newRole: "lider" | "porta_voz" | "vagabundo") => {
+    const existing = userRoles.find((r) => r.user_id === targetUserId);
+    if (existing) {
+      const { error } = await supabase.from("user_roles").update({ role: newRole }).eq("id", existing.id);
+      if (error) toast.error("Erro: " + error.message);
+      else { toast.success("Cargo atualizado!"); loadAll(); }
+    } else {
+      const { error } = await supabase.from("user_roles").insert([{ user_id: targetUserId, role: newRole }]);
+      if (error) toast.error("Erro: " + error.message);
+      else { toast.success("Cargo atribuído!"); loadAll(); }
+    }
+  };
+
+  const getUserRole = (uid: string) => userRoles.find((r) => r.user_id === uid)?.role || "vagabundo";
 
   const getProfileName = (userId: string) => profiles.find((p) => p.user_id === userId)?.name || "Anônimo";
 
@@ -396,22 +414,41 @@ export default function AdminPage() {
           <Users className="w-5 h-5 text-primary" /> Membros
         </h2>
         <div className="space-y-2">
-          {profiles.map((p) => (
-            <div
-              key={p.id}
-              className="bg-gradient-card border border-border rounded-lg px-4 py-3 flex items-center gap-3 cursor-pointer hover:border-primary/30 transition-colors"
-              onClick={() => navigate(`/perfil/${p.user_id}`)}
-            >
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm overflow-hidden">
-                {p.avatar_url ? <img src={p.avatar_url} className="w-full h-full object-cover" /> : "👤"}
+          {profiles.map((p) => {
+            const role = getUserRole(p.user_id);
+            const roleLabels: Record<string, string> = { lider: "👑 Líder", porta_voz: "📢 Porta-voz", vagabundo: "😴 Vagabundo" };
+            const roleColors: Record<string, string> = { lider: "text-primary", porta_voz: "text-[hsl(200,70%,50%)]", vagabundo: "text-muted-foreground" };
+            return (
+              <div
+                key={p.id}
+                className="bg-gradient-card border border-border rounded-lg px-4 py-3 flex items-center gap-3"
+              >
+                <div
+                  className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm overflow-hidden cursor-pointer"
+                  onClick={() => navigate(`/perfil/${p.user_id}`)}
+                >
+                  {p.avatar_url ? <img src={p.avatar_url} className="w-full h-full object-cover" /> : "👤"}
+                </div>
+                <div className="flex-1 min-w-0 cursor-pointer" onClick={() => navigate(`/perfil/${p.user_id}`)}>
+                  <p className="text-sm font-semibold text-foreground">{p.name || "Sem nome"}</p>
+                  <p className="text-xs text-muted-foreground">{p.username ? `@${p.username}` : ""} {p.aka ? `· AKA: ${p.aka}` : ""}</p>
+                </div>
+                <Select
+                  value={role}
+                  onValueChange={(val) => changeRole(p.user_id, val as "lider" | "porta_voz" | "vagabundo")}
+                >
+                  <SelectTrigger className={`w-[140px] bg-muted border-border text-xs h-8 ${roleColors[role]}`}>
+                    <SelectValue>{roleLabels[role]}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lider">👑 Líder</SelectItem>
+                    <SelectItem value="porta_voz">📢 Porta-voz</SelectItem>
+                    <SelectItem value="vagabundo">😴 Vagabundo</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-foreground">{p.name || "Sem nome"}</p>
-                <p className="text-xs text-muted-foreground">{p.username ? `@${p.username}` : ""} {p.aka ? `· AKA: ${p.aka}` : ""}</p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>
