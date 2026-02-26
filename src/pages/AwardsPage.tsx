@@ -25,7 +25,7 @@ export default function AwardsPage() {
         >
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
             <Trophy className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Temporada 2024</span>
+            <span className="text-sm font-medium text-primary">Temporada {new Date().getFullYear()}</span>
           </div>
           <h1 className="font-display text-4xl md:text-6xl font-bold mb-4 text-gradient-gold">
             Motherfucker Awards
