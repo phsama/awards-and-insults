@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Trophy, Plus, Play, Eye, Crown, Ticket, Award, Copy, Check,
-  ChevronRight, Users, Settings, Trash2
+  ChevronRight, Users, Settings, Trash2, Medal
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -19,7 +19,13 @@ export default function AdminPage() {
   const [nominations, setNominations] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [invites, setInvites] = useState<any[]>([]);
+  const [badges, setBadges] = useState<any[]>([]);
+  const [userBadges, setUserBadges] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Badge assignment
+  const [badgeUserId, setBadgeUserId] = useState("");
+  const [badgeBadgeId, setBadgeBadgeId] = useState("");
 
   // Forms
   const [newSeasonYear, setNewSeasonYear] = useState(new Date().getFullYear());
@@ -33,18 +39,22 @@ export default function AdminPage() {
 
   const loadAll = async () => {
     setLoading(true);
-    const [seasonsRes, catsRes, nomsRes, profilesRes, invitesRes] = await Promise.all([
+    const [seasonsRes, catsRes, nomsRes, profilesRes, invitesRes, badgesRes, ubRes] = await Promise.all([
       supabase.from("award_seasons").select("*").order("year", { ascending: false }),
       supabase.from("award_categories").select("*"),
       supabase.from("award_nominations").select("*"),
       supabase.from("profiles").select("*"),
       supabase.from("invites").select("*").order("created_at", { ascending: false }),
+      supabase.from("badges").select("*"),
+      supabase.from("user_badges").select("*"),
     ]);
     setSeasons(seasonsRes.data || []);
     setCategories(catsRes.data || []);
     setNominations(nomsRes.data || []);
     setProfiles(profilesRes.data || []);
     setInvites(invitesRes.data || []);
+    setBadges(badgesRes.data || []);
+    setUserBadges(ubRes.data || []);
     if (seasonsRes.data?.[0]) setSelectedSeason(seasonsRes.data[0].id);
     setLoading(false);
   };
@@ -96,6 +106,29 @@ export default function AdminPage() {
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     toast.success("Código copiado!");
+  };
+
+  const assignBadge = async () => {
+    if (!badgeUserId || !badgeBadgeId) return;
+    const { error } = await supabase.from("user_badges").insert({
+      user_id: badgeUserId,
+      badge_id: badgeBadgeId,
+      assigned_by: user!.id,
+    } as any);
+    if (error) {
+      if (error.message.includes("duplicate")) toast.error("Já possui essa badge");
+      else toast.error("Erro: " + error.message);
+    } else {
+      toast.success("Badge atribuída!");
+      setBadgeUserId(""); setBadgeBadgeId("");
+      loadAll();
+    }
+  };
+
+  const removeBadge = async (id: string) => {
+    await supabase.from("user_badges").delete().eq("id", id);
+    toast.success("Badge removida");
+    loadAll();
   };
 
   const getProfileName = (userId: string) => profiles.find((p) => p.user_id === userId)?.name || "Anônimo";
@@ -296,6 +329,63 @@ export default function AdminPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ===== BADGES ===== */}
+      <section>
+        <h2 className="font-display text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+          <Medal className="w-5 h-5 text-primary" /> Badges
+        </h2>
+
+        <div className="flex flex-wrap gap-2 mb-4">
+          {badges.map((b) => (
+            <span key={b.id} className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full" title={b.description}>
+              {b.emoji} {b.name}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex gap-2 mb-4">
+          <Select value={badgeUserId} onValueChange={setBadgeUserId}>
+            <SelectTrigger className="flex-1 bg-muted border-border"><SelectValue placeholder="Membro" /></SelectTrigger>
+            <SelectContent>
+              {profiles.map((p) => (
+                <SelectItem key={p.user_id} value={p.user_id}>{p.name || "Sem nome"}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={badgeBadgeId} onValueChange={setBadgeBadgeId}>
+            <SelectTrigger className="flex-1 bg-muted border-border"><SelectValue placeholder="Badge" /></SelectTrigger>
+            <SelectContent>
+              {badges.map((b) => (
+                <SelectItem key={b.id} value={b.id}>{b.emoji} {b.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={assignBadge} className="bg-primary text-primary-foreground hover:bg-gold-light">
+            <Plus className="w-4 h-4 mr-1" /> Dar
+          </Button>
+        </div>
+
+        {userBadges.length > 0 && (
+          <div className="space-y-2">
+            {userBadges.map((ub) => {
+              const badge = badges.find((b) => b.id === ub.badge_id);
+              return (
+                <div key={ub.id} className="bg-gradient-card border border-border rounded-lg px-4 py-2 flex items-center gap-3">
+                  <span className="text-lg">{badge?.emoji}</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">{badge?.name}</p>
+                    <p className="text-xs text-muted-foreground">→ {getProfileName(ub.user_id)}</p>
+                  </div>
+                  <button onClick={() => removeBadge(ub.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* ===== MEMBROS ===== */}
