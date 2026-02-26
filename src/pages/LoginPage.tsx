@@ -87,13 +87,13 @@ export default function LoginPage() {
         transition={{ duration: 0.6 }}
         className="w-full max-w-md relative z-10"
       >
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-10">
           <img
             src={logo}
             alt="Motherfucker Awards"
-            className="w-48 h-auto"
+            className="w-64 h-auto"
             style={{
-              filter: 'drop-shadow(0 0 40px hsl(43 56% 52% / 0.3))',
+              filter: 'drop-shadow(0 0 50px hsl(43 56% 52% / 0.45)) drop-shadow(0 0 100px hsl(43 56% 52% / 0.2))',
               mixBlendMode: 'lighten',
             }}
           />
