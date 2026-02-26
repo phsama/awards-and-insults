@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Heart, MessageCircle, Send } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 export default function FeedPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [newPost, setNewPost] = useState("");
   const [posts, setPosts] = useState<any[]>([]);
@@ -131,7 +133,7 @@ export default function FeedPage() {
                 transition={{ delay: i * 0.04 }}
                 className="bg-gradient-card border border-border rounded-2xl p-5 hover:border-primary/20 transition-colors"
               >
-                <div className="flex items-start gap-3.5 mb-3">
+                <div className="flex items-start gap-3.5 mb-3 cursor-pointer" onClick={() => navigate(`/perfil/${post.user_id}`)}>
                   <div className={`w-12 h-12 rounded-full bg-muted ring-2 ${ringColor} flex items-center justify-center text-xl shrink-0 overflow-hidden`}>
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} className="w-full h-full rounded-full object-cover" />
@@ -139,7 +141,7 @@ export default function FeedPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2">
-                      <p className="font-semibold text-foreground text-[15px]">{profile?.name || "Anônimo"}</p>
+                      <p className="font-semibold text-foreground text-[15px] hover:text-primary transition-colors">{profile?.name || "Anônimo"}</p>
                       {profile?.aka && (
                         <span className="text-xs text-primary/70 font-medium">AKA {profile.aka}</span>
                       )}
