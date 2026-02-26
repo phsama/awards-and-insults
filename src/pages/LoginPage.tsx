@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -14,6 +14,12 @@ export default function LoginPage() {
   const [inviteCode, setInviteCode] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) navigate("/awards");
+    });
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +43,7 @@ export default function LoginPage() {
 
     // Verify invite code
     const { data: invite, error: inviteError } = await supabase
-      .from("invites")
+      .from("invites" as any)
       .select("*")
       .eq("code", inviteCode.trim())
       .eq("used", false)
@@ -62,7 +68,7 @@ export default function LoginPage() {
     }
 
     // Mark invite as used
-    await supabase.from("invites").update({ used: true }).eq("id", invite.id);
+    await supabase.from("invites" as any).update({ used: true } as any).eq("id", (invite as any).id);
 
     setLoading(false);
     toast.success("Conta criada! Verifique seu email para confirmar.");
@@ -71,7 +77,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-dark p-4 relative overflow-hidden">
-      {/* Background glow */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/10 blur-[120px]" />
       </div>
