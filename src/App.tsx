@@ -85,6 +85,14 @@ const App = () => (
               }
             />
             <Route
+              path="/perfil/:userId"
+              element={
+                <RequireAuth>
+                  <AppLayout><ProfilePage /></AppLayout>
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/admin"
               element={
                 <RequireAuth>
