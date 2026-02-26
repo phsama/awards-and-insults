@@ -65,7 +65,10 @@ export default function AwardsPage() {
     }
   };
 
-  const getProfileName = (uid: string) => profiles.find((p) => p.user_id === uid)?.name || "Anônimo";
+  const getDisplayName = (uid: string) => {
+    const p = profiles.find((pr) => pr.user_id === uid);
+    return p?.aka || p?.name || "Anônimo";
+  };
   const getProfile = (uid: string) => profiles.find((p) => p.user_id === uid);
 
   const phaseLabel: Record<string, string> = {
@@ -159,14 +162,14 @@ export default function AwardsPage() {
               const nomCounts: Record<string, number> = {};
               catNoms.forEach((n) => { nomCounts[n.nominated_user_id] = (nomCounts[n.nominated_user_id] || 0) + 1; });
               const nominatedUsers = Object.entries(nomCounts)
-                .map(([uid, count]) => ({ uid, count, name: getProfileName(uid), profile: getProfile(uid) }))
+                .map(([uid, count]) => ({ uid, count, name: getDisplayName(uid), profile: getProfile(uid) }))
                 .sort((a, b) => b.count - a.count);
 
               // For results phase - vote counts
               const voteCounts: Record<string, number> = {};
               catVotes.forEach((v) => { voteCounts[v.voted_for] = (voteCounts[v.voted_for] || 0) + 1; });
               const voteRanking = Object.entries(voteCounts)
-                .map(([uid, count]) => ({ uid, count, name: getProfileName(uid), profile: getProfile(uid) }))
+                .map(([uid, count]) => ({ uid, count, name: getDisplayName(uid), profile: getProfile(uid) }))
                 .sort((a, b) => b.count - a.count);
 
               const myNomination = catNoms.find((n) => n.nominated_by === user?.id);
@@ -234,7 +237,7 @@ export default function AwardsPage() {
                                 <SelectContent>
                                   {profiles.filter((p) => p.user_id !== user?.id).map((p) => (
                                     <SelectItem key={p.user_id} value={p.user_id}>
-                                      {p.name}{p.aka ? ` (${p.aka})` : ""}
+                                      {p.aka || p.name}{p.aka && p.name ? ` (${p.name})` : ""}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>

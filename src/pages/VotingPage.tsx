@@ -53,7 +53,10 @@ export default function VotingPage() {
     else { toast.success("Voto registrado! 🗳️"); loadData(); }
   };
 
-  const getProfileName = (uid: string) => profiles.find((p) => p.user_id === uid)?.name || "Anônimo";
+  const getDisplayName = (uid: string) => {
+    const p = profiles.find((p) => p.user_id === uid);
+    return p?.aka || p?.name || "Anônimo";
+  };
   const getProfile = (uid: string) => profiles.find((p) => p.user_id === uid);
 
   const isVotingOpen = season?.phase === "voting";
@@ -111,7 +114,7 @@ export default function VotingPage() {
             const sortedNominees = uniqueNominees
               .map((uid) => ({
                 uid,
-                name: getProfileName(uid),
+                name: getDisplayName(uid),
                 profile: getProfile(uid),
                 noms: nomCounts[uid] || 0,
                 voteCount: voteCounts[uid] || 0,
@@ -183,7 +186,7 @@ export default function VotingPage() {
                               <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
                                 {isWinner && <Crown className="w-4 h-4 text-primary" />}
                                 {name}
-                                {profile?.aka && <span className="text-xs text-muted-foreground">({profile.aka})</span>}
+                                {profile?.aka && profile?.name && <span className="text-xs text-muted-foreground">({profile.name})</span>}
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 {isResults ? `${voteCount} voto${voteCount !== 1 ? "s" : ""} (${pct}%)` : `${noms} indicação${noms > 1 ? "ões" : ""}`}
