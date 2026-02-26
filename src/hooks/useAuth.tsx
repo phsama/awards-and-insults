@@ -7,30 +7,49 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
+  role: string | null;
+  isLider: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ session: null, user: null, loading: true });
+const AuthContext = createContext<AuthContextType>({ session: null, user: null, loading: true, role: null, isLider: false });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoading(false);
+      if (session?.user) {
+        // Defer role fetch to avoid Supabase deadlock
+        setTimeout(() => fetchRole(session.user.id), 0);
+      } else {
+        setRole(null);
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
+      if (session?.user) fetchRole(session.user.id);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const fetchRole = async (userId: string) => {
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .maybeSingle();
+    setRole(data?.role || "vagabundo");
+  };
+
   return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading }}>
+    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, role, isLider: role === "lider" }}>
       {children}
     </AuthContext.Provider>
   );

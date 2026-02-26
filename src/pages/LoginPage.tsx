@@ -106,7 +106,7 @@ export default function LoginPage() {
           <p className="text-muted-foreground text-center text-sm mb-6">
             {isSignup
               ? "Cadastro apenas com convite. Sem atalho, sem jeitinho."
-              : "O único prêmio que importa é a nossa zoeira."}
+              : "O único prêmio que importa é a nossa amizade."}
           </p>
 
           <form onSubmit={isSignup ? handleSignup : handleLogin} className="space-y-4">

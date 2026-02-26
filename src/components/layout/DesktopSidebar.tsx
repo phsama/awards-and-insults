@@ -1,8 +1,9 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Trophy, MessageSquare, Calendar, BookOpen, PiggyBank, User, LogOut } from "lucide-react";
+import { Trophy, MessageSquare, Calendar, BookOpen, PiggyBank, User, LogOut, Settings } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { to: "/awards", label: "Awards", icon: Trophy },
@@ -16,11 +17,16 @@ const navItems = [
 export function DesktopSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isLider } = useAuth();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login");
   };
+
+  const allItems = isLider
+    ? [...navItems, { to: "/admin", label: "Gerenciar", icon: Settings }]
+    : navItems;
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-sidebar border-r border-sidebar-border min-h-screen">
@@ -34,7 +40,7 @@ export function DesktopSidebar() {
       </div>
 
       <nav className="flex-1 px-3 space-y-1">
-        {navItems.map((item) => {
+        {allItems.map((item) => {
           const isActive = location.pathname.startsWith(item.to);
           return (
             <NavLink
