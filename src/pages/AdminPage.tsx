@@ -25,6 +25,7 @@ export default function AdminPage() {
   const [newSeasonYear, setNewSeasonYear] = useState(new Date().getFullYear());
   const [newCatName, setNewCatName] = useState("");
   const [newCatEmoji, setNewCatEmoji] = useState("🏆");
+  const [newCatDesc, setNewCatDesc] = useState("");
   const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
   const [newInviteCode, setNewInviteCode] = useState("");
 
@@ -70,9 +71,10 @@ export default function AdminPage() {
       name: newCatName.trim(),
       emoji: newCatEmoji || "🏆",
       season_id: selectedSeason,
-    });
+      description: newCatDesc.trim() || null,
+    } as any);
     if (error) toast.error("Erro: " + error.message);
-    else { setNewCatName(""); toast.success("Categoria criada!"); loadAll(); }
+    else { setNewCatName(""); setNewCatDesc(""); toast.success("Categoria criada!"); loadAll(); }
   };
 
   const deleteCategory = async (id: string) => {
@@ -206,6 +208,12 @@ export default function AdminPage() {
               placeholder="Nome da categoria"
               className="flex-1 bg-muted border-border"
             />
+            <Input
+              value={newCatDesc}
+              onChange={(e) => setNewCatDesc(e.target.value)}
+              placeholder="Descrição (opcional)"
+              className="flex-1 bg-muted border-border"
+            />
             <Button onClick={createCategory} className="bg-primary text-primary-foreground hover:bg-gold-light">
               <Plus className="w-4 h-4 mr-1" /> Criar
             </Button>
@@ -225,6 +233,7 @@ export default function AdminPage() {
                     <span className="text-xl">{cat.emoji}</span>
                     <div className="flex-1">
                       <p className="font-semibold text-sm text-foreground">{cat.name}</p>
+                      {cat.description && <p className="text-xs text-muted-foreground">{cat.description}</p>}
                       <p className="text-xs text-muted-foreground">{catNoms.length} indicações</p>
                     </div>
                     {catNoms.length > 0 && (

@@ -17,6 +17,7 @@ export type Database = {
       award_categories: {
         Row: {
           created_at: string
+          description: string | null
           emoji: string | null
           id: string
           name: string
@@ -24,6 +25,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description?: string | null
           emoji?: string | null
           id?: string
           name: string
@@ -31,6 +33,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description?: string | null
           emoji?: string | null
           id?: string
           name?: string
