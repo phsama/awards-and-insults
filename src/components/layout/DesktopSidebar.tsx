@@ -24,8 +24,13 @@ export function DesktopSidebar() {
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-sidebar border-r border-sidebar-border min-h-screen">
-      <div className="p-6 flex items-center justify-center">
-        <img src={logo} alt="Motherfucker Awards" className="w-32 h-auto" />
+      <div className="p-6 flex flex-col items-center justify-center">
+        <img
+          src={logo}
+          alt="Motherfucker Awards"
+          className="w-40 h-auto"
+          style={{ filter: 'drop-shadow(0 0 24px hsl(43 56% 52% / 0.4))' }}
+        />
       </div>
 
       <nav className="flex-1 px-3 space-y-1">
